@@ -140,7 +140,7 @@ module "ecs_task_definition" {
   # Container definition(s)
   container_definitions = {
     (local.container_name) = {
-      essential = false
+      essential = true
       image = "public.ecr.aws/amazonlinux/amazonlinux:2023-minimal"
 
       mount_points = [
