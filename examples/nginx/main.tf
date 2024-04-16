@@ -52,39 +52,69 @@ module "ecs_cluster" {
 # Service
 ################################################################################
 
-module "ecs_service" {
-  source = "../../modules/service"
-
-  name        = local.name
-  cluster_arn = module.ecs_cluster.arn
-
-  cpu    = 1024
-  memory = 4096
-
-  # Enables ECS Exec
-  enable_execute_command = true
-
-  # Container definition(s)
-  container_definitions = {
-  }
-
-  subnet_ids = module.vpc.private_subnets
-  security_group_rules = {
-    egress_all = {
-      type        = "egress"
-      from_port   = 0
-      to_port     = 0
-      protocol    = "-1"
-      cidr_blocks = ["0.0.0.0/0"]
-    }
-  }
-
-  service_tags = {
-    "ServiceTag" = "Tag on service level"
-  }
-
-  tags = local.tags
-}
+# module "ecs_service" {
+#   source = "../../modules/service"
+#
+#   name        = local.name
+#   cluster_arn = module.ecs_cluster.arn
+#
+#   cpu    = 1024
+#   memory = 4096
+#
+#   # Enables ECS Exec
+#   enable_execute_command = true
+#
+#   # Container definition(s)
+#   container_definitions = {
+#     (local.container_name) = {
+#       cpu       = 512
+#       memory    = 1024
+#       essential = true
+#       image     = "public.ecr.aws/aws-containers/ecsdemo-frontend:776fd50"
+#       port_mappings = [
+#         {
+#           name          = local.container_name
+#           containerPort = local.container_port
+#           hostPort      = local.container_port
+#           protocol      = "tcp"
+#         }
+#       ]
+#
+#       # Example image used requires access to write to root filesystem
+#       readonly_root_filesystem = false
+#
+#       enable_cloudwatch_logging = false
+#
+#       linux_parameters = {
+#         capabilities = {
+#           add = []
+#           drop = [
+#             "NET_RAW"
+#           ]
+#         }
+#       }
+#
+#       memory_reservation = 100
+#     }
+#   }
+#
+#   subnet_ids = module.vpc.private_subnets
+#   security_group_rules = {
+#     egress_all = {
+#       type        = "egress"
+#       from_port   = 0
+#       to_port     = 0
+#       protocol    = "-1"
+#       cidr_blocks = ["0.0.0.0/0"]
+#     }
+#   }
+#
+#   service_tags = {
+#     "ServiceTag" = "Tag on service level"
+#   }
+#
+#   tags = local.tags
+# }
 
 ################################################################################
 # Standalone Task Definition (w/o Service)
@@ -109,7 +139,8 @@ module "ecs_task_definition" {
 
   # Container definition(s)
   container_definitions = {
-    al2023 = {
+    (local.container_name) = {
+      essential = false
       image = "public.ecr.aws/amazonlinux/amazonlinux:2023-minimal"
 
       mount_points = [
