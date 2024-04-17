@@ -53,6 +53,7 @@ module "ecs_task_definition" {
   # Service
   name        = "${local.name}-standalone"
   cluster_arn = module.ecs_cluster.arn
+  desired_count = 1
 
   # Task Definition
   volume = {
@@ -68,7 +69,7 @@ module "ecs_task_definition" {
   container_definitions = {
     (local.container_name) = {
       essential = true
-      desired_count = 1
+      desired_count = 0
       image = "public.ecr.aws/amazonlinux/amazonlinux:2023-minimal"
 
       mount_points = [
@@ -78,7 +79,8 @@ module "ecs_task_definition" {
         }
       ]
 
-      command    = ["echo hello world"]
+      # command    = ["echo hello world"]
+      command    = ["while :; do echo 'hi'; sleep 30; done"]
       entrypoint = ["/usr/bin/sh", "-c"]
     }
   }
