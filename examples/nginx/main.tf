@@ -2,17 +2,12 @@ provider "aws" {
   region = local.region
 }
 
-data "aws_availability_zones" "available" {}
 
 locals {
   region = "eu-west-1"
   name   = "ex-${basename(path.cwd)}"
 
-  vpc_cidr = "10.0.0.0/16"
-  azs      = slice(data.aws_availability_zones.available.names, 0, 3)
-
   container_name = "ecsdemo-frontend"
-  container_port = 3000
 
   tags = {
     Name       = local.name
@@ -49,74 +44,6 @@ module "ecs_cluster" {
 }
 
 ################################################################################
-# Service
-################################################################################
-
-# module "ecs_service" {
-#   source = "../../modules/service"
-#
-#   name        = local.name
-#   cluster_arn = module.ecs_cluster.arn
-#
-#   cpu    = 1024
-#   memory = 4096
-#
-#   # Enables ECS Exec
-#   enable_execute_command = true
-#
-#   # Container definition(s)
-#   container_definitions = {
-#     (local.container_name) = {
-#       cpu       = 512
-#       memory    = 1024
-#       essential = true
-#       image     = "public.ecr.aws/aws-containers/ecsdemo-frontend:776fd50"
-#       port_mappings = [
-#         {
-#           name          = local.container_name
-#           containerPort = local.container_port
-#           hostPort      = local.container_port
-#           protocol      = "tcp"
-#         }
-#       ]
-#
-#       # Example image used requires access to write to root filesystem
-#       readonly_root_filesystem = false
-#
-#       enable_cloudwatch_logging = false
-#
-#       linux_parameters = {
-#         capabilities = {
-#           add = []
-#           drop = [
-#             "NET_RAW"
-#           ]
-#         }
-#       }
-#
-#       memory_reservation = 100
-#     }
-#   }
-#
-#   subnet_ids = module.vpc.private_subnets
-#   security_group_rules = {
-#     egress_all = {
-#       type        = "egress"
-#       from_port   = 0
-#       to_port     = 0
-#       protocol    = "-1"
-#       cidr_blocks = ["0.0.0.0/0"]
-#     }
-#   }
-#
-#   service_tags = {
-#     "ServiceTag" = "Tag on service level"
-#   }
-#
-#   tags = local.tags
-# }
-
-################################################################################
 # Standalone Task Definition (w/o Service)
 ################################################################################
 
@@ -141,6 +68,7 @@ module "ecs_task_definition" {
   container_definitions = {
     (local.container_name) = {
       essential = true
+      desired_count = 1
       image = "public.ecr.aws/amazonlinux/amazonlinux:2023-minimal"
 
       mount_points = [
@@ -173,21 +101,6 @@ module "ecs_task_definition" {
 ################################################################################
 # Supporting Resources
 ################################################################################
-
-
 module "vpc" {
-  source  = "terraform-aws-modules/vpc/aws"
-  version = "~> 5.0"
-
-  name = local.name
-  cidr = local.vpc_cidr
-
-  azs             = local.azs
-  private_subnets = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 4, k)]
-  public_subnets  = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k + 48)]
-
-  enable_nat_gateway = true
-  single_nat_gateway = true
-
-  tags = local.tags
+  source = "../../vpc"
 }
