@@ -71,6 +71,7 @@ module "ecs_task_definition" {
       essential = true
       desired_count = 0
       image = "public.ecr.aws/amazonlinux/amazonlinux:2023-minimal"
+      # image = ${aws_ecr_repository.app_ecr_repo.repository_url}
 
       mount_points = [
         {
@@ -105,4 +106,8 @@ module "ecs_task_definition" {
 ################################################################################
 module "vpc" {
   source = "../../vpc"
+}
+
+resource "aws_ecr_repository" "app_ecr_repo" {
+  name = local.name
 }
