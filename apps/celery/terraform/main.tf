@@ -71,8 +71,13 @@ module "ecs_task_definition" {
       essential = true
       desired_count = 0
       image = "public.ecr.aws/amazonlinux/amazonlinux:2023-minimal"
-      # image = ${aws_ecr_repository.app_ecr_repo.repository_url}
 
+      portMappings = [
+        {
+          containerPort = 5000
+          hostPort      = 5000
+        }
+      ]
       mount_points = [
         {
           sourceVolume  = "ex-vol",

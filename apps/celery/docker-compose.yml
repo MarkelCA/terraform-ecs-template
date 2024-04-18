@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  celery-worker:
+    container_name: celery-worker
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    depends_on:
+      - redis
+    volumes:
+      - ./src:/app/src
+
+  redis:
+    container_name: redis
+    image: redis:latest
+    ports:
+      - "6380:6379"
+
