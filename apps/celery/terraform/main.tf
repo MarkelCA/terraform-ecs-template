@@ -5,9 +5,9 @@ provider "aws" {
 
 locals {
   region = "eu-west-1"
-  name   = "ex-${basename(path.cwd)}"
+  name   = "celery"
 
-  container_name = "ecsdemo-frontend"
+  container_name = "celery-container"
 
   tags = {
     Name       = local.name
@@ -21,18 +21,18 @@ locals {
 ################################################################################
 
 module "ecs_cluster" {
-  source = "../../modules/cluster"
+  source = "../../../terraform/deps/cluster"
 
   cluster_name = local.name
 
   # Capacity provider
   fargate_capacity_providers = {
-    FARGATE = {
-      default_capacity_provider_strategy = {
-        weight = 50
-        base   = 20
-      }
-    }
+    # FARGATE = {
+    #   default_capacity_provider_strategy = {
+    #     weight = 50
+    #     base   = 20
+    #   }
+    # }
     FARGATE_SPOT = {
       default_capacity_provider_strategy = {
         weight = 50
@@ -48,7 +48,7 @@ module "ecs_cluster" {
 ################################################################################
 
 module "ecs_task_definition" {
-  source = "../../modules/service"
+  source = "../../../terraform/deps/service"
 
   # Service
   name        = "${local.name}-standalone"
@@ -105,7 +105,7 @@ module "ecs_task_definition" {
 # Supporting Resources
 ################################################################################
 module "vpc" {
-  source = "../../vpc"
+  source = "../../../terraform/vpc"
 }
 
 resource "aws_ecr_repository" "app_ecr_repo" {
