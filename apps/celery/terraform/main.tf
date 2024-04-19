@@ -61,7 +61,7 @@ module "ecs_task_definition" {
   }
 
   runtime_platform = {
-    cpu_architecture        = "ARM64"
+    cpu_architecture        = "X86_64"
     operating_system_family = "LINUX"
   }
 
@@ -70,7 +70,8 @@ module "ecs_task_definition" {
     (local.container_name) = {
       essential = true
       desired_count = 0
-      image = "public.ecr.aws/amazonlinux/amazonlinux:2023-minimal"
+      # image = "public.ecr.aws/amazonlinux/amazonlinux:2023-minimal"
+      image = "647017618515.dkr.ecr.eu-west-1.amazonaws.com/celery:latest"
 
       portMappings = [
         {
@@ -85,9 +86,11 @@ module "ecs_task_definition" {
         }
       ]
 
-      # command    = ["echo hello world"]
-      command    = ["while :; do echo 'hi'; sleep 30; done"]
-      entrypoint = ["/usr/bin/sh", "-c"]
+      workingDirectory = "/app"
+      # entrypoint = ["/bin/sh", "-c"]
+      # command    = ["while :; do echo 'loop'; sleep 30; done"]
+      # command    = ["redis-server & celery --app=src.init.celery worker --uid=nobody --gid=nogroup & python3 src/init.py"]
+      # command    = ["echo 'markel'"]
     }
   }
 

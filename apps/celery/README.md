@@ -23,3 +23,33 @@ redis-cli -p 6380
 get celery-task-meta-<task id>
 ```
 
+# Add image to ECR
+Retrieve an authentication token and authenticate your Docker client to your registry.
+```
+aws ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin 647017618515.dkr.ecr.eu-west-1.amazonaws.com
+```
+Remove the key credStore from ~/.docker/config.json, and everything works normal now.
+
+Remove docker-credential-helpers
+
+```
+rm -rf ~/.password-store/docker-credential-helpers
+```
+
+[Reference](https://stackoverflow.com/questions/71770693/error-saving-credentials-error-storing-credentials-err-exit-status-1-out)
+
+Build the docker image
+```
+docker build -t celery .
+```
+Tag the image
+```
+docker tag celery:latest 647017618515.dkr.ecr.eu-west-1.amazonaws.com/celery:latest
+```
+Push the image to the repo
+```
+docker push 647017618515.dkr.ecr.eu-west-1.amazonaws.com/celery:latest
+```
+
+
+
