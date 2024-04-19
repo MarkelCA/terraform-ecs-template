@@ -52,15 +52,9 @@ module "ecs_cluster" {
 module "ecs_task_definition" {
   source = "../../../terraform/deps/service"
 
-  # Service
   name        = "${local.name}-standalone"
   cluster_arn = module.ecs_cluster.arn
-  desired_count = 1
-
-  # Task Definition
-  # volume = {
-  #   ex-vol = {}
-  # }
+  desired_count = 0
 
   runtime_platform = {
     cpu_architecture        = "X86_64"
@@ -71,7 +65,6 @@ module "ecs_task_definition" {
   container_definitions = {
     (local.container_name) = {
       essential = true
-      desired_count = 0
       # image = "public.ecr.aws/amazonlinux/amazonlinux:2023-minimal"
       image = "647017618515.dkr.ecr.eu-west-1.amazonaws.com/celery:latest"
       readonly_root_filesystem = false
@@ -83,8 +76,8 @@ module "ecs_task_definition" {
       ]
 
       workingDirectory = "/app"
-      # entrypoint = ["/bin/sh", "-c"]
-      # command    = ["while :; do echo 'loop'; sleep 30; done"]
+      entrypoint = ["/bin/sh", "-c"]
+      command    = ["echo 'markel'"]
       # command    = ["redis-server & celery --app=src.init.celery worker --uid=nobody --gid=nogroup & python3 src/init.py"]
       # command    = ["echo 'markel'"]
     }
