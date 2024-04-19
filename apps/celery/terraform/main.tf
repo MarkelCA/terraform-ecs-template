@@ -51,6 +51,7 @@ module "ecs_cluster" {
 
 module "ecs_task_definition" {
   source = "../../../terraform/deps/service"
+  create_service = false
 
   name        = "${local.name}-standalone"
   cluster_arn = module.ecs_cluster.arn
