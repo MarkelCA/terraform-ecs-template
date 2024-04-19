@@ -3,6 +3,8 @@ provider "aws" {
 }
 
 
+
+
 locals {
   region = "eu-west-1"
   name   = "celery"
@@ -56,9 +58,9 @@ module "ecs_task_definition" {
   desired_count = 1
 
   # Task Definition
-  volume = {
-    ex-vol = {}
-  }
+  # volume = {
+  #   ex-vol = {}
+  # }
 
   runtime_platform = {
     cpu_architecture        = "X86_64"
@@ -77,12 +79,6 @@ module "ecs_task_definition" {
         {
           containerPort = 5000
           hostPort      = 5000
-        }
-      ]
-      mount_points = [
-        {
-          sourceVolume  = "ex-vol",
-          containerPath = "/var/www/ex-vol"
         }
       ]
 
