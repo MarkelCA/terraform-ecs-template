@@ -4,9 +4,9 @@ provider "aws" {
 
 locals {
   region = "eu-west-1"
-  name   = "celery"
+  name   = "ex-${basename(dirname(path.cwd))}"
 
-  container_name = "celery-container"
+  container_name = "${local.name}-container"
 
   tags = {
     Name       = local.name
