@@ -64,7 +64,7 @@ module "ecs_task_definition" {
     (local.container_name) = {
       essential = true
       # image = "public.ecr.aws/amazonlinux/amazonlinux:2023-minimal"
-      image = "647017618515.dkr.ecr.eu-west-1.amazonaws.com/celery:latest"
+      image = "647017618515.dkr.ecr.eu-west-1.amazonaws.com/${local.name}:latest"
       readonly_root_filesystem = false
       portMappings = [
         {
