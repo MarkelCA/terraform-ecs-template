@@ -52,6 +52,8 @@ output "task_definition_run_task_command" {
     aws ecs run-task --cluster ${module.ecs_cluster.name} \
       --task-definition ${module.ecs_task_definition.task_definition_family_revision} \
       --network-configuration "awsvpcConfiguration={subnets=[${join(",", module.vpc.private_subnets)}],securityGroups=[${module.ecs_task_definition.security_group_id}]}" \
-      --region ${local.region}
+      --region ${local.region} \
+      --overrides '{"containerOverrides":[{"name":"${local.container_name}","environment":[{"name":"MY_SECRET_KEY","value":"foo"}]}]}'
   EOT
 }
+

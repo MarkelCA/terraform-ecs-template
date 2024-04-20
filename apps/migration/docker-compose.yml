@@ -5,3 +5,5 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    environment:
+      MY_SECRET_KEY: 'my_secret_key'

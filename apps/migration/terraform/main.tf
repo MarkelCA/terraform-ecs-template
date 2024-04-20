@@ -66,18 +66,14 @@ module "ecs_task_definition" {
       # image = "public.ecr.aws/amazonlinux/amazonlinux:2023-minimal"
       image = "647017618515.dkr.ecr.eu-west-1.amazonaws.com/${local.name}:latest"
       readonly_root_filesystem = false
-      portMappings = [
+      workingDirectory = "/app"
+      environment = [
         {
-          containerPort = 5000
-          hostPort      = 5000
+          name = "MY_SECRET_KEY"
+          value = "my_secret_value"
         }
       ]
 
-      workingDirectory = "/app"
-      # entrypoint = ["/bin/sh", "-c"]
-      # command    = ["echo 'markel'"]
-      # command    = ["redis-server & celery --app=src.init.celery worker --uid=nobody --gid=nogroup & python3 src/init.py"]
-      # command    = ["echo 'markel'"]
     }
   }
 
