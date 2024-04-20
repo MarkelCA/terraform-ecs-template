@@ -4,7 +4,7 @@ provider "aws" {
 
 locals {
   region = "eu-west-1"
-  name   = "ex-${basename(dirname(path.cwd))}"
+  name   = "${basename(dirname(path.cwd))}"
 
   container_name = "${local.name}-container"
 
@@ -74,8 +74,8 @@ module "ecs_task_definition" {
       ]
 
       workingDirectory = "/app"
-      entrypoint = ["/bin/sh", "-c"]
-      command    = ["echo 'markel'"]
+      # entrypoint = ["/bin/sh", "-c"]
+      # command    = ["echo 'markel'"]
       # command    = ["redis-server & celery --app=src.init.celery worker --uid=nobody --gid=nogroup & python3 src/init.py"]
       # command    = ["echo 'markel'"]
     }

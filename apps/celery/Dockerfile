@@ -5,4 +5,4 @@ ENV PYTHONPATH "${PYTHONPATH}:/app/src"
 COPY ./src /app
 WORKDIR /app
 
-ENTRYPOINT ["python", "-u", "/app/src/main.py"]
+ENTRYPOINT ["python", "-u", "/app/main.py"]
