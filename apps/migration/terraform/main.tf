@@ -2,15 +2,19 @@ provider "aws" {
   region = local.region
 }
 
+data "aws_caller_identity" "current" {}
+
+
 locals {
   region = "eu-west-1"
-  name   = "${basename(dirname(path.cwd))}"
+  name   = "markel-${basename(dirname(path.cwd))}"
+  description = "This resource has been created as part of a smowlkathon"
 
   container_name = "${local.name}-container"
 
   tags = {
-    Name       = local.name
-    Example    = local.name
+    Name = local.name
+    Description = local.description
     Repository = "https://github.com/terraform-aws-modules/terraform-aws-ecs"
   }
 }
@@ -50,7 +54,7 @@ module "ecs_task_definition" {
   source = "../../../terraform/deps/service"
   create_service = false
 
-  name        = "${local.name}-standalone"
+  name        = "${local.name}"
   cluster_arn = module.ecs_cluster.arn
   desired_count = 0
 
@@ -64,7 +68,7 @@ module "ecs_task_definition" {
     (local.container_name) = {
       essential = true
       # image = "public.ecr.aws/amazonlinux/amazonlinux:2023-minimal"
-      image = "647017618515.dkr.ecr.eu-west-1.amazonaws.com/${local.name}:latest"
+      image = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${local.region}.amazonaws.com/${local.name}:latest"
       readonly_root_filesystem = false
       workingDirectory = "/app"
       environment = [
@@ -97,8 +101,10 @@ module "ecs_task_definition" {
 ################################################################################
 module "vpc" {
   source = "../../../terraform/vpc"
+  name = local.name
 }
 
 resource "aws_ecr_repository" "app_ecr_repo" {
   name = local.name
+  tags = local.tags
 }

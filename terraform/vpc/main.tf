@@ -1,7 +1,6 @@
 data "aws_availability_zones" "available" {}
 
 locals {
-  name   = "ex-${basename(path.cwd)}"
   vpc_cidr = "10.0.0.0/16"
   azs      = slice(data.aws_availability_zones.available.names, 0, 3)
 }
@@ -11,7 +10,7 @@ module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "~> 5.0"
 
-  name = local.name
+  name = var.name
   cidr = local.vpc_cidr
 
   azs             = local.azs
@@ -20,4 +19,6 @@ module "vpc" {
 
   enable_nat_gateway = true
   single_nat_gateway = true
+
+  tags = var.tags
 }
